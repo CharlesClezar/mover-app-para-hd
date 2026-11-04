@@ -24,3 +24,7 @@ Requer Xcode Command Line Tools. Gera um app universal (Intel + Apple Silicon, m
 ```
 
 O app sai em `Mover App para HD.app` na raiz do projeto. Na primeira abertura, clique com o botão direito → Abrir (app não assinado).
+
+## Download
+
+O DMG é gerado automaticamente a cada push na `main` (GitHub Actions) e fica na [release "latest"](../../releases/latest).

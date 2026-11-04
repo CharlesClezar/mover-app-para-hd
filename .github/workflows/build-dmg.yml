@@ -1,0 +1,40 @@
+name: Build DMG
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Compilar app (Intel + Apple Silicon)
+        run: ./MoverApp/build.sh
+
+      - name: Gerar DMG
+        run: |
+          mkdir dmg
+          cp -R "Mover App para HD.app" dmg/
+          ln -s /Applications dmg/Applications
+          hdiutil create -volname "Mover App para HD" -srcfolder dmg -ov -format UDZO "Mover-App-para-HD.dmg"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Mover-App-para-HD
+          path: Mover-App-para-HD.dmg
+
+      - name: Publicar na release "latest"
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release delete latest --yes --cleanup-tag || true
+          gh release create latest Mover-App-para-HD.dmg \
+            --title "Última versão" \
+            --notes "DMG gerado automaticamente a partir de $GITHUB_SHA" \
+            --target "$GITHUB_SHA"
